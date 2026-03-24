@@ -1,4 +1,4 @@
-name: Build and Publish OpenList + ABC Docker Image
+name: Build OpenList + ABC Docker Image
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 强制 Actions 使用 Node.js 24
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # 强制 Actions 使用 Node.js 24，避免 Node.js 20 报错
 
 jobs:
   build:
@@ -16,13 +16,13 @@ jobs:
     steps:
       # 1️⃣ Checkout 仓库
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4  # 最新版本，支持 Node.js 24
 
-      # 2️⃣ 安装 Buildx（最新稳定版 v3.4.1）
+      # 2️⃣ 设置 Docker Buildx (最新稳定版本)
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.4.1
+        uses: docker/setup-buildx-action@v3.5.0  # v3.5.0 支持 Node.js 24
 
-      # 3️⃣ 构建 Docker 镜像 (Linux AMD64)
+      # 3️⃣ 构建 Docker 镜像，强制 Linux AMD64
       - name: Build Docker image
         run: |
           docker build \
@@ -35,14 +35,14 @@ jobs:
           mkdir -p image
           docker save openlist-abc:latest -o image/openlist-abc.tar
 
-      # 5️⃣ 上传 tar 文件到 GitHub Artifact (v4)
+      # 5️⃣ 上传 tar 文件到 GitHub Artifact
       - name: Upload Docker image artifact
         uses: actions/upload-artifact@v4
         with:
           name: openlist-abc-image
           path: image/openlist-abc.tar
 
-      # 6️⃣ 可选：测试运行镜像
+      # 6️⃣ 可选：测试容器是否能启动
       - name: Test container
         run: |
           docker run --rm -d --name test_openlist \
