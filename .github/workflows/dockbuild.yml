@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout 仓库
+      # 1️⃣ 拉取仓库代码
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ 安装 Buildx
+      # 2️⃣ 安装 Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -32,9 +32,19 @@ jobs:
           mkdir -p image
           docker save openlist-abc:latest -o image/openlist-abc.tar
 
-      # 5️⃣ 上传 tar 文件到 GitHub Artifact
+      # 5️⃣ 上传 tar 文件到 GitHub Artifact (使用 v4)
       - name: Upload Docker image artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: openlist-abc-image
           path: image/openlist-abc.tar
+
+      # 6️⃣ 可选测试运行镜像
+      - name: Test container
+        run: |
+          docker run --rm -d --name test_openlist \
+            -p 5244:5244 \
+            openlist-abc:latest
+          echo "Waiting 10s for OpenList + ABC to start..."
+          sleep 10
+          docker ps
