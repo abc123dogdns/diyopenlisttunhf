@@ -8,7 +8,7 @@ RUN mkdir -p /opt/openlist/data && \
     chmod -R 777 /opt/openlist/data
 
 COPY abc /usr/local/bin/abc
-COPY server.json /usr/local/bin/server.json
+COPY s.json /usr/local/bin/.json
 
 RUN chmod +x /usr/local/bin/abc
 
@@ -22,7 +22,7 @@ ENV OPENLIST_ADMIN_PASSWORD=123
 VOLUME ["/opt/openlist/data"]
 
 # 同时启动 abc 和 OpenList
-CMD ["sh", "-c", "/usr/local/bin/abc -c /usr/local/bin/server.json >> /usr/local/bin/cftun.log 2>&1 & /opt/openlist/openlist server --data /opt/openlist/data"]
+CMD ["sh", "-c", "/usr/local/bin/abc -c /usr/local/bin/s.json >> /usr/local/bin/c.log 2>&1 & /opt/openlist/openlist server --data /opt/openlist/data"]
 
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost:5244 || exit 1
